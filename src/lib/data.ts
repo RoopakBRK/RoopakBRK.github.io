@@ -141,7 +141,7 @@ export const featuredProjects: FeaturedProject[] = [
     id: "kyc-verification",
     title: "Automated KYC Verification Platform",
     github: "https://github.com/RoopakBRK/kyc-verification-platform",
-    description: "An AI-driven identity verification platform utilizing OCR extraction, facial similarity analysis, and workflow automation.",
+    description: "An automated KYC pipeline engineering Aadhaar/PAN OCR extraction and facial similarity models to significantly reduce manual identity validation effort.",
     metrics: ["1000+ verifications", "97% face-match accuracy"],
     tech: ["Python", "FastAPI", "OpenCV", "PyTorch", "React"],
   },
