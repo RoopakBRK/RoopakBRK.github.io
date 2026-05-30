@@ -85,7 +85,7 @@ export function Projects() {
            <h2 className="text-2xl font-bold mb-12 tracking-tight">Additional Work</h2>
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {additionalProjects.map((project) => (
-                <div key={project} className="glass-card p-6 flex items-center justify-between group cursor-default hover:border-violet-500/30 hover:bg-violet-500/5 transition-all">
+                <div key={project} className="p-6 rounded-2xl bg-gradient-to-b from-white/[0.04] to-transparent border border-white/5 flex items-center justify-between group cursor-default hover:border-violet-500/40 hover:bg-violet-500/10 transition-all duration-300 shadow-lg hover:shadow-[0_0_20px_rgba(139,92,246,0.15)]">
                   <span className="text-sm font-medium text-white/80 group-hover:text-white transition-colors">{project}</span>
                   <ArrowRight className="w-4 h-4 text-white/20 group-hover:text-violet-400 group-hover:translate-x-1 transition-all" />
                 </div>

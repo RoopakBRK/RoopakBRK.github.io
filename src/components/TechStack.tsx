@@ -55,9 +55,10 @@ export function TechStack() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
-              className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-violet-500/30 hover:bg-violet-500/5 transition-all group"
+              className="p-6 rounded-2xl bg-gradient-to-b from-white/[0.04] to-transparent border border-white/5 hover:border-violet-500/40 hover:bg-violet-500/10 transition-all duration-300 group shadow-lg hover:shadow-[0_0_30px_rgba(139,92,246,0.15)] relative overflow-hidden"
             >
-              <div className="flex items-center gap-3 mb-6">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-violet-500/10 blur-[40px] rounded-full pointer-events-none transition-opacity group-hover:opacity-100 opacity-0" />
+              <div className="flex items-center gap-3 mb-6 relative z-10">
                 <div className="p-2 rounded-lg bg-white/5 text-white/80 group-hover:text-violet-400 group-hover:bg-violet-500/10 transition-colors">
                   {item.icon}
                 </div>

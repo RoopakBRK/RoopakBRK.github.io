@@ -48,7 +48,7 @@ export function Hero() {
                 View My Work
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </a>
-              <a href="/resume.pdf" target="_blank" className="px-6 py-3 bg-white/5 border border-white/10 text-white text-sm font-semibold rounded-full hover:bg-white/10 transition-all flex items-center gap-2">
+              <a href="/roopak_ml_cv.pdf" target="_blank" className="px-6 py-3 bg-white/5 border border-white/10 text-white text-sm font-semibold rounded-full hover:bg-white/10 transition-all flex items-center gap-2">
                 <Download className="w-4 h-4" />
                 Download Resume
               </a>
@@ -67,10 +67,11 @@ export function Hero() {
               transition={{ duration: 0.7, ease: "easeOut" }}
               className="relative w-72 h-72 md:w-96 md:h-96"
             >
-              <div className="absolute inset-0 bg-gradient-to-tr from-violet-500/30 to-purple-500/30 rounded-full blur-3xl -z-10" />
+              {/* Supercool pulsing glow */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-violet-600/40 via-purple-500/40 to-fuchsia-500/40 rounded-full blur-[80px] -z-10 animate-pulse" />
               
-              {/* Profile Image Placeholder - User needs to add an actual image to /public */}
-              <div className="w-full h-full rounded-full border border-white/10 bg-white/5 overflow-hidden relative">
+              {/* Image container with glowing border */}
+              <div className="w-full h-full rounded-full border-2 border-violet-500/30 bg-black overflow-hidden relative shadow-[0_0_50px_rgba(139,92,246,0.3)]">
                 <Image src="/roopiee_image.jpg" alt="Roopak Krishna" fill className="object-cover" priority />
               </div>
             </motion.div>
@@ -98,8 +99,8 @@ export function Hero() {
                     <span className="text-xs text-white/40 tracking-wider">DSA Problems Solved</span>
                 </div>
                 <div className="flex flex-col gap-1 border-l-0 md:border-l">
-                    <span className="text-2xl font-bold">IIT Hyderabad</span>
-                    <span className="text-xs text-white/40 tracking-wider">Graduate</span>
+                    <span className="text-2xl font-bold">Graduated</span>
+                    <span className="text-xs text-white/40 tracking-wider">from IIT Hyderabad</span>
                 </div>
             </div>
         </motion.div>

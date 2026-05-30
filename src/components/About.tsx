@@ -64,7 +64,7 @@ export function About() {
                 <div className="w-[calc(100%-2.5rem)] md:w-[calc(50%-1.5rem)] ml-4 md:ml-0 md:group-even:pr-4 md:group-odd:pl-4">
                   <div className="flex flex-col">
                     <span className="text-xs text-white/40 font-mono mb-1">2025</span>
-                    <span className="font-semibold text-white/80">Graduated IIT Hyderabad</span>
+                    <span className="font-semibold text-white/80">Graduated from IIT Hyderabad</span>
                   </div>
                 </div>
               </div>
