@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { featuredProjects, additionalProjects } from "@/lib/data";
-import { Github, ExternalLink, ArrowRight } from "lucide-react";
+import { Github, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
