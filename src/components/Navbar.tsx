@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { personalInfo } from "@/lib/data";
 
 const navItems = [
   { name: "About", href: "#about" },

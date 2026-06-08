@@ -160,6 +160,7 @@ export const featuredProjects: FeaturedProject[] = [
     description: "A comprehensive financial calculation platform offering precision tools for investment planning, loan amortization, and risk analysis.",
     metrics: ["Advanced calculators", "Intuitive dashboard"],
     tech: ["React", "Next.js", "TypeScript", "Tailwind CSS"],
+    image: "/fincalifyUI.jpg"
   },
   {
     id: "calsify",
