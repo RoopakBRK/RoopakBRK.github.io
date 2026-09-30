@@ -2,23 +2,60 @@
 
 import { useEffect, useRef } from "react";
 
-// Skills pinned to the globe. Spread across the sphere by index.
-const LABELS = ["LLMs", "RAG", "Agents", "CompGCN", "Vision", "OCR", "Voice AI", "MLOps", "PyTorch", "LangGraph", "FastAPI", "Next.js"];
+// Skills pinned to the globe.
+const LABELS = [
+  "LLMs",
+  "RAG",
+  "Agents",
+  "CompGCN",
+  "Vision",
+  "OCR",
+  "Voice AI",
+  "MLOps",
+  "PyTorch",
+  "LangGraph",
+  "FastAPI",
+  "Next.js",
+  "LangChain",
+  "Qdrant",
+  "FAISS",
+  "Kubeflow",
+  "MLflow",
+  "Docker",
+  "AWS",
+  "TensorFlow",
+  "PEFT",
+  "LoRA",
+  "Fine-tuning",
+  "Mistral",
+  "Twilio",
+  "Deepgram",
+  "NLP",
+  "GNNs",
+  "Multi-agent",
+  "React",
+  "PostgreSQL",
+  "Scikit-Learn",
+];
 
-const POINTS = 680;
+const POINTS = 760;
 const GOLDEN = Math.PI * (3 - Math.sqrt(5));
 
 type Vec = { x: number; y: number; z: number };
 
 // Evenly spaced points on a unit sphere.
-const sphere: Vec[] = Array.from({ length: POINTS }, (_, i) => {
-  const y = 1 - (i / (POINTS - 1)) * 2;
-  const r = Math.sqrt(1 - y * y);
-  const theta = GOLDEN * i;
-  return { x: Math.cos(theta) * r, y, z: Math.sin(theta) * r };
-});
+function fibonacciSphere(count: number): Vec[] {
+  return Array.from({ length: count }, (_, i) => {
+    const y = 1 - (i / (count - 1)) * 2;
+    const r = Math.sqrt(1 - y * y);
+    const theta = GOLDEN * i;
+    return { x: Math.cos(theta) * r, y, z: Math.sin(theta) * r };
+  });
+}
 
-const labelIndex = LABELS.map((_, i) => Math.round(((i + 0.5) / LABELS.length) * (POINTS - 1)));
+const sphere = fibonacciSphere(POINTS);
+// Labels get their own evenly spread positions, slightly outside the dots, so they never bunch up.
+const labelPoints = fibonacciSphere(LABELS.length).map((p) => ({ x: p.x * 1.04, y: p.y * 1.04, z: p.z * 1.04 }));
 
 function hexToRgb(hex: string): [number, number, number] {
   const h = hex.trim().replace("#", "");
@@ -132,11 +169,12 @@ export function HeroGlobe() {
       const fontSize = Math.max(11, Math.min(14, radius * 0.075));
       ctx.font = `500 ${fontSize}px ${colors.font}`;
       ctx.textBaseline = "middle";
-      labelIndex.forEach((idx, i) => {
-        const q = project(sphere[idx]);
+      labelPoints.forEach((point, i) => {
+        const q = project(point);
         const depth = (q.z + 1) / 2;
-        if (depth < 0.35) return;
-        const alpha = Math.min(1, (depth - 0.35) / 0.4);
+        // Only labels facing the viewer; ones near the rim crowd together.
+        if (depth < 0.62) return;
+        const alpha = Math.min(1, (depth - 0.62) / 0.25);
         const t = Math.min(1, Math.max(0, (q.x - (cx - radius)) / (radius * 2)));
         ctx.strokeStyle = mix(t, alpha);
         ctx.lineWidth = 1.25;

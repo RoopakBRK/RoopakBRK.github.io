@@ -9,7 +9,7 @@
 :root {
   --bg: #dfe3e8;
   --ink: #0b0d12;
-  --muted: #5b6371;
+  --muted: #454c59;
   --line: #b7bec9;
   --faint: #cfd4db;
   --signal: #3d2bff;
@@ -24,7 +24,7 @@
   :root {
     --bg: #06070a;
     --ink: #e4e8ee;
-    --muted: #8a93a2;
+    --muted: #a3abb8;
     --line: #2a2f3a;
     --faint: #161a22;
     --signal: #8577ff;
@@ -112,4 +112,26 @@
 
 .edge-flow {
   animation: edge-flow 1.6s linear infinite;
+}
+
+@keyframes orbit-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.orbit-spin {
+  animation: orbit-spin 120s linear infinite;
+}
+
+/* Pause the whole system while someone is reading it */
+.orbit:hover .orbit-spin {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orbit-spin,
+  .edge-flow {
+    animation: none !important;
+  }
 }

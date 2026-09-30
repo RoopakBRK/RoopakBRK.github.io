@@ -101,7 +101,7 @@ export function Hero() {
 
           <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 self-end text-sm">
             <dt className="text-muted">Role</dt>
-            <dd>AI/ML engineer, full stack AI developer</dd>
+            <dd>AI/ML Engineer, AI FullStack Developer</dd>
             <dt className="text-muted">Based in</dt>
             <dd>{personalInfo.location}</dd>
             <dt className="text-muted">Studied at</dt>
