@@ -1,110 +1,128 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { personalInfo } from "@/lib/data";
-import { ArrowRight, Download, Mail } from "lucide-react";
-import Image from "next/image";
+import { useEffect, useState } from "react";
+import { personalInfo, education } from "@/lib/data";
+import { HeroGlobe } from "@/components/HeroGlobe";
+
+const NOISE = "#%+=/<>0123456789";
+const LINES = personalInfo.name.split(" ");
+
+// The name resolves out of noise once on load, like a diffusion model denoising.
+function useDenoised(text: string, delay: number) {
+  const [output, setOutput] = useState(text);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const duration = 1100;
+    // Each character settles at its own moment, so the word sharpens unevenly.
+    const settleAt = Array.from(
+      text,
+      (_, i) => delay + (i / text.length) * duration * 0.6 + Math.random() * duration * 0.4,
+    );
+    const start = performance.now();
+    let frame = 0;
+
+    const tick = (now: number) => {
+      const t = now - start;
+      let done = true;
+      const next = Array.from(text, (ch, i) => {
+        if (t >= settleAt[i] || ch === " ") return ch;
+        done = false;
+        return NOISE[Math.floor(Math.random() * NOISE.length)];
+      }).join("");
+      setOutput(next);
+      if (!done) frame = requestAnimationFrame(tick);
+    };
+
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [text, delay]);
+
+  return output;
+}
+
+function DenoisedLine({ text, delay }: { text: string; delay: number }) {
+  const output = useDenoised(text, delay);
+  return (
+    <span className="block" aria-hidden="true">
+      {output}
+    </span>
+  );
+}
 
 export function Hero() {
   return (
-    <section className="relative min-h-screen flex flex-col justify-center pt-24 pb-12 overflow-hidden">
-      <div className="container px-6 mx-auto">
-        <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-8">
-          
-          {/* Left Side: Content */}
-          <div className="w-full lg:w-3/5 z-10 relative">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-300 text-xs font-medium font-mono mb-6">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-violet-500"></span>
-                </span>
-                Hi, I&apos;m <span className="text-white font-bold">{personalInfo.name.split(" ")[0]}</span> 👋
-              </div>
-              
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 leading-tight">
-                Full Stack AI Developer <br />
-                <span className="text-white/40">Building Production AI Systems</span>
-              </h1>
-              
-              <p className="max-w-2xl text-lg md:text-xl text-white/50 mb-8 leading-relaxed">
-                I build AI products, machine learning pipelines, LLM applications, and scalable web platforms.
-                <br /><br />
-                Currently working on AI Agents, Quantitative Trading Systems, and Enterprise AI Applications.
-              </p>
-            </motion.div>
+    <div className="relative isolate overflow-hidden">
+      {/* Soft dark blue and dark pink light behind the globe */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+        <div
+          className="absolute -right-40 -top-24 h-[42rem] w-[42rem] rounded-full opacity-30 blur-3xl dark:opacity-40"
+          style={{ background: "radial-gradient(circle, var(--grad-a), transparent 62%)" }}
+        />
+        <div
+          className="absolute right-[18%] top-[30%] h-[30rem] w-[30rem] rounded-full opacity-25 blur-3xl dark:opacity-35"
+          style={{ background: "radial-gradient(circle, var(--grad-b), transparent 62%)" }}
+        />
+      </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="flex flex-wrap items-center gap-4"
-            >
-              <a href="#projects" className="px-6 py-3 bg-gradient-to-r from-violet-500 to-purple-600 border-none text-white text-sm font-semibold rounded-full hover:from-violet-400 hover:to-purple-500 shadow-[0_0_20px_rgba(139,92,246,0.3)] transition-all flex items-center gap-2 group">
-                View My Work
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </a>
-              <a href="/roopak_ml_cv.pdf" target="_blank" className="px-6 py-3 bg-white/5 border border-white/10 text-white text-sm font-semibold rounded-full hover:bg-white/10 transition-all flex items-center gap-2">
-                <Download className="w-4 h-4" />
-                Download Resume
-              </a>
-              <a href="#contact" className="px-6 py-3 bg-white/5 border border-white/10 text-white text-sm font-semibold rounded-full hover:bg-white/10 transition-all flex items-center gap-2">
-                <Mail className="w-4 h-4" />
-                Contact Me
-              </a>
-            </motion.div>
+      <section className="mx-auto flex min-h-[min(100svh,62rem)] max-w-page flex-col justify-center px-4 pb-16 pt-10 sm:px-8 sm:pb-20">
+        <div className="grid items-center gap-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,27rem)] lg:gap-6">
+          <div className="order-1 h-[300px] sm:h-[380px] lg:order-2 lg:h-[460px]">
+            <HeroGlobe />
           </div>
-
-          {/* Right Side: Image and Badges */}
-          <div className="w-full lg:w-2/5 relative flex justify-center lg:justify-end">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
-              className="relative w-72 h-72 md:w-96 md:h-96"
-            >
-              {/* Supercool pulsing glow */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-violet-600/40 via-purple-500/40 to-fuchsia-500/40 rounded-full blur-[80px] -z-10 animate-pulse" />
-              
-              {/* Image container with glowing border */}
-              <div className="w-full h-full rounded-full border-2 border-violet-500/30 bg-black overflow-hidden relative shadow-[0_0_50px_rgba(139,92,246,0.3)]">
-                <Image src="/roopiee_image.jpg" alt="Roopak Krishna" fill className="object-cover" priority />
-              </div>
-            </motion.div>
-          </div>
+          <h1
+            aria-label={personalInfo.name}
+            className="text-gradient order-2 w-fit pb-[0.08em] font-display text-[clamp(3rem,12vw,9rem)] font-light leading-[0.92] tracking-[-0.04em] lg:order-1"
+          >
+            {LINES.map((line, i) => (
+              <DenoisedLine key={line} text={line} delay={i * 180} />
+            ))}
+          </h1>
         </div>
 
-        {/* Quick Stats Row Below Hero */}
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
-            className="mt-24 lg:mt-32 border-y border-white/5 py-8"
-        >
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center text-center divide-x divide-white/5">
-                <div className="flex flex-col gap-1">
-                    <span className="text-2xl font-bold">1+</span>
-                    <span className="text-xs text-white/40 tracking-wider">Year Experience</span>
-                </div>
-                <div className="flex flex-col gap-1 border-l-0 md:border-l">
-                    <span className="text-2xl font-bold">8+</span>
-                    <span className="text-xs text-white/40 tracking-wider">Major Projects</span>
-                </div>
-                <div className="flex flex-col gap-1">
-                    <span className="text-2xl font-bold">300+</span>
-                    <span className="text-xs text-white/40 tracking-wider">DSA Problems Solved</span>
-                </div>
-                <div className="flex flex-col gap-1 border-l-0 md:border-l">
-                    <span className="text-2xl font-bold">Graduated</span>
-                    <span className="text-xs text-white/40 tracking-wider">from IIT Hyderabad</span>
-                </div>
+        <div className="mt-12 grid gap-10 border-t border-line pt-8 sm:mt-16 md:grid-cols-[1.4fr_1fr]">
+          <div>
+            <p className="max-w-[34ch] text-xl leading-snug sm:text-2xl">{personalInfo.summary}</p>
+            <div className="mt-8 flex flex-wrap items-center gap-5">
+              <a
+                href={personalInfo.resume}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-gradient-brand rounded-full px-5 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
+              >
+                View resume
+              </a>
+              <a href="#work" className="link-underline text-sm font-medium">
+                See my projects
+              </a>
             </div>
-        </motion.div>
-      </div>
-    </section>
+          </div>
+
+          <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 self-end text-sm">
+            <dt className="text-muted">Role</dt>
+            <dd>AI/ML engineer, full stack AI developer</dd>
+            <dt className="text-muted">Based in</dt>
+            <dd>{personalInfo.location}</dd>
+            <dt className="text-muted">Studied at</dt>
+            <dd>
+              {education.shortSchool}, {education.period.split("–")[1].trim()}
+            </dd>
+            <dt className="text-muted">Elsewhere</dt>
+            <dd className="flex gap-4">
+              <a href={personalInfo.github} target="_blank" rel="noopener noreferrer" className="link-underline">
+                GitHub
+              </a>
+              <a href={personalInfo.linkedin} target="_blank" rel="noopener noreferrer" className="link-underline">
+                LinkedIn
+              </a>
+              <a href={`mailto:${personalInfo.email}`} className="link-underline">
+                Email
+              </a>
+            </dd>
+          </dl>
+        </div>
+      </section>
+    </div>
   );
 }
