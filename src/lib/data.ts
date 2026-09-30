@@ -12,7 +12,7 @@ export interface PersonalInfo {
 
 export const personalInfo: PersonalInfo = {
   name: "Roopak Krishna",
-  title: "AI/ML Engineer | Full Stack AI Developer",
+  title: "AI/ML Engineer | AI FullStack Developer",
   summary: "I build and ship production AI systems end to end, from model development to deployment.",
   secondaryTagline:
     "AI/ML engineer building computer vision, OCR verification and agentic LLM systems, from prototype to production.",

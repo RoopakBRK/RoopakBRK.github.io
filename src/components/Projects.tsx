@@ -32,7 +32,7 @@ function isEdgeLit(edge: (typeof edges)[number], s: Selection) {
 function nodeClass(isSelected: boolean, isLit: boolean) {
   if (isSelected) return "bg-gradient-brand scale-125";
   if (isLit) return "bg-ink";
-  return "border border-line bg-bg";
+  return "border border-muted bg-bg";
 }
 
 export function Projects() {
@@ -64,7 +64,7 @@ export function Projects() {
       <div className="grid gap-12 lg:grid-cols-[3fr_2fr] lg:gap-14">
         {/* Graph */}
         <div onMouseLeave={() => setHover(null)}>
-          <div className={`mb-3 grid ${COLUMNS} text-xs text-muted`}>
+          <div className={`mb-3 grid ${COLUMNS} text-sm font-medium text-muted`}>
             <span className="pr-6 text-right">Project</span>
             <span />
             <span className="pl-6">Capability</span>
@@ -84,11 +84,11 @@ export function Projects() {
                       onFocus={() => setHover({ kind: "project", id: project.id })}
                       onBlur={() => setHover(null)}
                       aria-pressed={isSelected}
-                      className={`flex h-full w-full items-center justify-end gap-3 text-right text-sm leading-tight transition-colors sm:text-base ${
-                        isLit ? "text-ink" : "text-muted"
-                      } ${isSelected ? "font-medium" : ""}`}
+                      className={`flex h-full w-full items-center justify-end gap-3 text-right text-sm leading-tight text-ink transition-colors sm:text-base ${
+                        isLit ? "font-semibold" : "hover:font-medium"
+                      }`}
                     >
-                      <span>{project.shortTitle}</span>
+                      <span className={isSelected ? "text-gradient" : undefined}>{project.shortTitle}</span>
                       <span
                         className={`h-2.5 w-2.5 shrink-0 rounded-full transition-all duration-300 ${nodeClass(isSelected, isLit)}`}
                         aria-hidden="true"
@@ -112,7 +112,8 @@ export function Projects() {
                   key={`${edge.project}-${edge.capability}`}
                   d={edge.d}
                   fill="none"
-                  stroke="var(--line)"
+                  stroke="var(--muted)"
+                  strokeOpacity={0.35}
                   strokeWidth={1}
                   vectorEffect="non-scaling-stroke"
                 />
@@ -153,15 +154,15 @@ export function Projects() {
                       onFocus={() => setHover({ kind: "capability", id: cap.id })}
                       onBlur={() => setHover(null)}
                       aria-pressed={isSelected}
-                      className={`flex h-full w-full items-center gap-3 text-left text-sm leading-tight transition-colors sm:text-base ${
-                        isLit ? "text-ink" : "text-muted"
-                      } ${isSelected ? "font-medium" : ""}`}
+                      className={`flex h-full w-full items-center gap-3 text-left text-sm leading-tight text-ink transition-colors sm:text-base ${
+                        isLit ? "font-semibold" : "hover:font-medium"
+                      }`}
                     >
                       <span
                         className={`h-2.5 w-2.5 shrink-0 rotate-45 transition-all duration-300 ${nodeClass(isSelected, isLit)}`}
                         aria-hidden="true"
                       />
-                      <span>{cap.label}</span>
+                      <span className={isSelected ? "text-gradient" : undefined}>{cap.label}</span>
                     </button>
                   </li>
                 );

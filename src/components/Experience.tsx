@@ -67,7 +67,7 @@ const checkpoints: Checkpoint[] = [
     phase: "Next checkpoint",
     step: "next",
     org: "Open to new roles",
-    role: "AI/ML engineering and full stack AI",
+    role: "AI/ML Engineer and AI FullStack Developer roles",
     period: "",
     notes: [
       "Excited to join a team shipping AI products to real users.",
