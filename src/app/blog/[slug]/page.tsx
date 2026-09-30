@@ -1,4 +1,4 @@
-import { Navbar } from "@/components/Navbar";
+import Link from "next/link";
 import { Footer } from "@/components/Footer";
 import { blogPosts } from "@/lib/data";
 import { notFound } from "next/navigation";
@@ -12,18 +12,18 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
   }
 
   return (
-    <main className="min-h-screen bg-black text-white">
-      <Navbar />
-      <div className="container px-6 mx-auto pt-40 pb-24">
-        <h1 className="text-4xl md:text-6xl font-bold mb-8 tracking-tight">{post.title}</h1>
-        <div className="prose prose-invert max-w-none">
-          <p className="text-white/50 text-xl leading-relaxed">
-            This is a placeholder for the article &quot;{post.title}&quot;. Full content coming soon.
-          </p>
-        </div>
-      </div>
+    <>
+      <main className="mx-auto max-w-page px-4 pb-24 pt-16 sm:px-8">
+        <Link href="/" className="link-underline mb-24 inline-block text-sm text-muted">
+          Back to home
+        </Link>
+        <h1 className="mb-8 max-w-[20ch] font-display text-4xl font-light tracking-tight md:text-6xl">{post.title}</h1>
+        <p className="max-w-[60ch] text-xl leading-relaxed text-muted">
+          This article is still being written. Check back soon.
+        </p>
+      </main>
       <Footer />
-    </main>
+    </>
   );
 }
 

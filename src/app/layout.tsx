@@ -1,9 +1,24 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Unbounded, Instrument_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { personalInfo } from "@/lib/data";
 
-const inter = Inter({ subsets: ["latin"] });
+const display = Unbounded({
+  subsets: ["latin"],
+  weight: ["300", "400"],
+  variable: "--font-display",
+});
+
+const sans = Instrument_Sans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
+
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-mono",
+});
 
 export const metadata: Metadata = {
   title: `${personalInfo.name} | ${personalInfo.title}`,
@@ -24,10 +39,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark scroll-smooth">
-      <body className={`${inter.className} antialiased selection:bg-white/20`}>
-        {children}
-      </body>
+    <html lang="en" className={`${display.variable} ${sans.variable} ${mono.variable}`}>
+      <body className="font-sans antialiased">{children}</body>
     </html>
   );
 }

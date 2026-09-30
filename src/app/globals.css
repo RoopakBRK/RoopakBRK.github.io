@@ -2,9 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+  Palette — cool aluminium lab instrument, one ultraviolet signal colour.
+  Signal is reserved for "selected / live" state only.
+*/
 :root {
-  --background: #000000;
-  --foreground: #ffffff;
+  --bg: #dfe3e8;
+  --ink: #0b0d12;
+  --muted: #5b6371;
+  --line: #b7bec9;
+  --faint: #cfd4db;
+  --signal: #3d2bff;
+  --signal-ink: #ffffff;
+  /* Dark blue to dark pink, used for the name, the loss curve and the resume button */
+  --grad-a: #1b2a8a;
+  --grad-b: #9b1b62;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #06070a;
+    --ink: #e4e8ee;
+    --muted: #8a93a2;
+    --line: #2a2f3a;
+    --faint: #161a22;
+    --signal: #8577ff;
+    --signal-ink: #06070a;
+    --grad-a: #4a5cf0;
+    --grad-b: #d6479a;
+    color-scheme: dark;
+  }
 }
 
 @layer base {
@@ -13,35 +41,75 @@
   }
 
   body {
-    @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    background: var(--bg);
+    color: var(--ink);
+    font-feature-settings: "ss01" 1, "tnum" 1;
+  }
+
+  ::selection {
+    background: var(--signal);
+    color: var(--signal-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 3px;
+    border-radius: 2px;
   }
 }
 
 @layer components {
-  .glass {
-    @apply bg-white/5 backdrop-blur-md border border-white/10;
-  }
-  
-  .glass-card {
-    @apply bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl transition-all duration-300 hover:bg-white/10 hover:border-white/20;
+  /* Faint measurement grid used behind the project map */
+  .grid-field {
+    background-image:
+      linear-gradient(var(--faint) 1px, transparent 1px),
+      linear-gradient(90deg, var(--faint) 1px, transparent 1px);
+    background-size: 10% 10%;
+    background-position: -1px -1px;
   }
 
-  .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-white via-white/80 to-white/50;
+  .link-underline {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0% 1px;
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    transition: background-size 0.3s ease;
   }
-  
-  .bg-gradient-premium {
-    @apply bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-pink-600/20;
+  .link-underline:hover,
+  .link-underline:focus-visible {
+    background-size: 100% 1px;
   }
 }
 
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
 
-.animate-float {
-  animation: float 6s ease-in-out infinite;
+.text-gradient {
+  background-image: linear-gradient(100deg, var(--grad-a), var(--grad-b));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.bg-gradient-brand {
+  background-image: linear-gradient(100deg, #1b2a8a, #9b1b62);
+}
+
+@keyframes edge-flow {
+  to {
+    stroke-dashoffset: -32;
+  }
+}
+
+.edge-flow {
+  animation: edge-flow 1.6s linear infinite;
 }

@@ -1,98 +1,279 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { featuredProjects, additionalProjects } from "@/lib/data";
-import { Github, ArrowRight } from "lucide-react";
-import Link from "next/link";
+import { useState } from "react";
 import Image from "next/image";
+import { AnimatePresence, motion } from "framer-motion";
+import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
+import { capabilities, featuredProjects, type CapabilityId } from "@/lib/data";
+
+type Selection = { kind: "project"; id: string } | { kind: "capability"; id: CapabilityId };
+
+const ROW = 52;
+const HEIGHT = featuredProjects.length * ROW;
+const CAP_ROW = HEIGHT / capabilities.length;
+const COLUMNS = "grid-cols-[minmax(0,1fr)_minmax(2.5rem,0.6fr)_minmax(0,1fr)]";
+
+const projectY = (i: number) => (i + 0.5) * ROW;
+const capabilityY = (j: number) => (j + 0.5) * CAP_ROW;
+
+const edges = featuredProjects.flatMap((project, i) =>
+  project.capabilities.map((capId) => {
+    const j = capabilities.findIndex((c) => c.id === capId);
+    const y1 = projectY(i);
+    const y2 = capabilityY(j);
+    return { project: project.id, capability: capId, d: `M0,${y1} C50,${y1} 50,${y2} 100,${y2}` };
+  }),
+);
+
+function isEdgeLit(edge: (typeof edges)[number], s: Selection) {
+  return s.kind === "project" ? edge.project === s.id : edge.capability === s.id;
+}
+
+function nodeClass(isSelected: boolean, isLit: boolean) {
+  if (isSelected) return "bg-gradient-brand scale-125";
+  if (isLit) return "bg-ink";
+  return "border border-line bg-bg";
+}
 
 export function Projects() {
+  const [selection, setSelection] = useState<Selection>({ kind: "project", id: featuredProjects[0].id });
+  const [hover, setHover] = useState<Selection | null>(null);
+  const reduceMotion = usePrefersReducedMotion();
+
+  // Hover previews connections; the panel follows the committed selection.
+  const lit = hover ?? selection;
+  const litEdges = edges.filter((e) => isEdgeLit(e, lit));
+  const litProjects = new Set(litEdges.map((e) => e.project));
+  const litCapabilities = new Set<CapabilityId>(litEdges.map((e) => e.capability));
+  if (lit.kind === "project") litProjects.add(lit.id);
+  else litCapabilities.add(lit.id);
+
+  const selectProject = (id: string) => setSelection({ kind: "project", id });
+  const selectCapability = (id: CapabilityId) => setSelection({ kind: "capability", id });
+
   return (
-    <section id="projects" className="py-24">
-      <div className="container px-6 mx-auto">
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold mb-4 tracking-tight">Featured Work</h2>
-          <p className="text-white/50 max-w-xl">
-            A selection of production-grade AI systems and scalable SaaS applications.
-          </p>
-        </div>
+    <section id="work" className="mx-auto max-w-page scroll-mt-8 px-4 py-24 sm:px-8 sm:py-32">
+      <div className="mb-12 grid gap-4 md:grid-cols-[1.4fr_1fr] md:items-end">
+        <h2 className="font-display text-3xl font-light tracking-tight sm:text-5xl">Projects</h2>
+        <p className="max-w-[44ch] text-muted">
+          Each project is wired to the capabilities it uses. Pick a project to trace its connections, or pick a
+          capability to see everywhere it shows up.
+        </p>
+      </div>
 
-        <div className="space-y-24">
-          {featuredProjects.map((project, index) => (
-            <motion.div
-              key={project.id}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className={`flex flex-col lg:flex-row gap-12 items-center ${
-                index % 2 === 1 ? "lg:flex-row-reverse" : ""
-              }`}
-            >
-              {/* Project Preview */}
-              <div className="w-full lg:w-1/2 aspect-video bg-gradient-premium rounded-2xl border border-white/10 relative overflow-hidden group">
-                {project.image ? (
-                   <Image src={project.image} alt={project.title} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
-                ) : (
-                   <>
-                      <div className="absolute inset-0 flex items-center justify-center opacity-50 group-hover:opacity-100 transition-opacity">
-                         <p className="text-sm font-mono tracking-widest">{project.title}</p>
-                      </div>
-                      <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
-                          <div className="absolute -top-[50%] -left-[50%] w-[200%] h-[200%] bg-[radial-gradient(circle,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:20px_20px]" />
-                      </div>
-                   </>
-                )}
-              </div>
+      <div className="grid gap-12 lg:grid-cols-[3fr_2fr] lg:gap-14">
+        {/* Graph */}
+        <div onMouseLeave={() => setHover(null)}>
+          <div className={`mb-3 grid ${COLUMNS} text-xs text-muted`}>
+            <span className="pr-6 text-right">Project</span>
+            <span />
+            <span className="pl-6">Capability</span>
+          </div>
 
-              <div className="w-full lg:w-1/2">
-                <h3 className="text-2xl font-bold mb-4">{project.title}</h3>
-                <p className="text-white/60 mb-6 leading-relaxed">
-                  {project.description}
-                </p>
-                
-                <div className="flex flex-wrap gap-2 mb-8">
-                  {project.tech.map((t) => (
-                    <span key={t} className="px-3 py-1 text-[10px] font-mono border border-white/10 rounded-full bg-white/5">
-                      {t}
-                    </span>
-                  ))}
-                </div>
+          <div className={`relative grid ${COLUMNS} border-y border-line`} style={{ height: HEIGHT }}>
+            <ul>
+              {featuredProjects.map((project) => {
+                const isSelected = selection.kind === "project" && selection.id === project.id;
+                const isLit = litProjects.has(project.id);
+                return (
+                  <li key={project.id} style={{ height: ROW }}>
+                    <button
+                      type="button"
+                      onClick={() => selectProject(project.id)}
+                      onMouseEnter={() => setHover({ kind: "project", id: project.id })}
+                      onFocus={() => setHover({ kind: "project", id: project.id })}
+                      onBlur={() => setHover(null)}
+                      aria-pressed={isSelected}
+                      className={`flex h-full w-full items-center justify-end gap-3 text-right text-sm leading-tight transition-colors sm:text-base ${
+                        isLit ? "text-ink" : "text-muted"
+                      } ${isSelected ? "font-medium" : ""}`}
+                    >
+                      <span>{project.shortTitle}</span>
+                      <span
+                        className={`h-2.5 w-2.5 shrink-0 rounded-full transition-all duration-300 ${nodeClass(isSelected, isLit)}`}
+                        aria-hidden="true"
+                      />
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
 
-                {project.id === "calsify" && (
-                  <div className="mb-8 p-4 rounded-xl border border-white/5 bg-white/[0.02] inline-block">
-                    <p className="text-xs text-white/40 tracking-widest mb-1">Domain</p>
-                    <a href="https://calsify.in" target="_blank" className="text-sm font-semibold text-white/90 hover:text-violet-400 transition-colors">Calsify.in</a>
-                  </div>
-                )}
-
-                <div className="flex gap-4">
-                  <Link
-                    href={project.github}
-                    target="_blank"
-                    className="flex items-center gap-2 px-6 py-3 rounded-full bg-white text-black text-sm font-bold hover:bg-white/90 transition-all"
-                  >
-                    <Github className="w-4 h-4" />
-                    GitHub
-                  </Link>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Additional Projects */}
-        <div className="mt-32">
-           <h2 className="text-2xl font-bold mb-12 tracking-tight">Additional Work</h2>
-           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {additionalProjects.map((project) => (
-                <div key={project} className="p-6 rounded-2xl bg-gradient-to-b from-white/[0.04] to-transparent border border-white/5 flex items-center justify-between group cursor-default hover:border-violet-500/40 hover:bg-violet-500/10 transition-all duration-300 shadow-lg hover:shadow-[0_0_20px_rgba(139,92,246,0.15)]">
-                  <span className="text-sm font-medium text-white/80 group-hover:text-white transition-colors">{project}</span>
-                  <ArrowRight className="w-4 h-4 text-white/20 group-hover:text-violet-400 group-hover:translate-x-1 transition-all" />
-                </div>
+            <svg className="h-full w-full" viewBox={`0 0 100 ${HEIGHT}`} preserveAspectRatio="none" aria-hidden="true">
+              <defs>
+                {/* userSpaceOnUse so perfectly horizontal edges still get the gradient */}
+                <linearGradient id="edge-gradient" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="100" y2="0">
+                  <stop offset="0" stopColor="var(--grad-a)" />
+                  <stop offset="1" stopColor="var(--grad-b)" />
+                </linearGradient>
+              </defs>
+              {edges.map((edge) => (
+                <path
+                  key={`${edge.project}-${edge.capability}`}
+                  d={edge.d}
+                  fill="none"
+                  stroke="var(--line)"
+                  strokeWidth={1}
+                  vectorEffect="non-scaling-stroke"
+                />
               ))}
-           </div>
+              {litEdges.map((edge) => (
+                <g key={`lit-${edge.project}-${edge.capability}`}>
+                  <path
+                    d={edge.d}
+                    fill="none"
+                    stroke="url(#edge-gradient)"
+                    strokeWidth={2}
+                    vectorEffect="non-scaling-stroke"
+                  />
+                  {/* Gaps travelling from project to capability, like signal along a wire */}
+                  <path
+                    d={edge.d}
+                    fill="none"
+                    stroke="var(--bg)"
+                    strokeWidth={3}
+                    strokeDasharray="2 14"
+                    vectorEffect="non-scaling-stroke"
+                    className="edge-flow"
+                  />
+                </g>
+              ))}
+            </svg>
+
+            <ul>
+              {capabilities.map((cap) => {
+                const isSelected = selection.kind === "capability" && selection.id === cap.id;
+                const isLit = litCapabilities.has(cap.id);
+                return (
+                  <li key={cap.id} style={{ height: CAP_ROW }}>
+                    <button
+                      type="button"
+                      onClick={() => selectCapability(cap.id)}
+                      onMouseEnter={() => setHover({ kind: "capability", id: cap.id })}
+                      onFocus={() => setHover({ kind: "capability", id: cap.id })}
+                      onBlur={() => setHover(null)}
+                      aria-pressed={isSelected}
+                      className={`flex h-full w-full items-center gap-3 text-left text-sm leading-tight transition-colors sm:text-base ${
+                        isLit ? "text-ink" : "text-muted"
+                      } ${isSelected ? "font-medium" : ""}`}
+                    >
+                      <span
+                        className={`h-2.5 w-2.5 shrink-0 rotate-45 transition-all duration-300 ${nodeClass(isSelected, isLit)}`}
+                        aria-hidden="true"
+                      />
+                      <span>{cap.label}</span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+
+        {/* Detail */}
+        <div className="lg:sticky lg:top-10 lg:self-start" aria-live="polite">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={`${selection.kind}-${selection.id}`}
+              initial={{ opacity: 0, y: reduceMotion ? 0 : 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: reduceMotion ? 0 : -8 }}
+              transition={{ duration: reduceMotion ? 0 : 0.22 }}
+            >
+              {selection.kind === "project" ? (
+                <ProjectDetail id={selection.id} onSelectCapability={selectCapability} />
+              ) : (
+                <CapabilityDetail id={selection.id} onSelectProject={selectProject} />
+              )}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </section>
+  );
+}
+
+function ProjectDetail({ id, onSelectCapability }: { id: string; onSelectCapability: (id: CapabilityId) => void }) {
+  const project = featuredProjects.find((p) => p.id === id) ?? featuredProjects[0];
+  return (
+    <article>
+      {project.period && <p className="mb-3 font-mono text-xs text-muted">{project.period}</p>}
+      <h3 className="font-display text-2xl font-normal leading-tight tracking-tight sm:text-3xl">{project.title}</h3>
+      <p className="mt-5 max-w-[52ch] leading-relaxed">{project.description}</p>
+
+      {project.image && (
+        <div className="relative mt-6 aspect-video overflow-hidden border border-line">
+          <Image
+            src={project.image}
+            alt={`Screenshot of ${project.title}`}
+            fill
+            sizes="(min-width: 1024px) 40vw, 100vw"
+            className="object-cover object-top"
+          />
+        </div>
+      )}
+
+      <ul className="mt-6 border-t border-line">
+        {project.metrics.map((metric) => (
+          <li key={metric} className="border-b border-line py-2.5">
+            {metric}
+          </li>
+        ))}
+      </ul>
+
+      <p className="mt-5 text-sm text-muted">{project.tech.join(", ")}</p>
+
+      <div className="mt-6 flex flex-wrap gap-2">
+        {project.capabilities.map((capId) => (
+          <button
+            key={capId}
+            type="button"
+            onClick={() => onSelectCapability(capId)}
+            className="rounded-full border border-line px-3 py-1 text-sm transition-colors hover:border-ink"
+          >
+            {capabilities.find((c) => c.id === capId)?.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-8 flex flex-wrap gap-6 text-sm">
+        <a href={project.github} target="_blank" rel="noopener noreferrer" className="link-underline font-medium">
+          View on GitHub
+        </a>
+        {project.live && (
+          <a href={project.live} target="_blank" rel="noopener noreferrer" className="link-underline font-medium">
+            Visit {new URL(project.live).host}
+          </a>
+        )}
+      </div>
+    </article>
+  );
+}
+
+function CapabilityDetail({ id, onSelectProject }: { id: CapabilityId; onSelectProject: (id: string) => void }) {
+  const cap = capabilities.find((c) => c.id === id);
+  const used = featuredProjects.filter((p) => p.capabilities.includes(id));
+  if (!cap) return null;
+  return (
+    <article>
+      <p className="mb-3 text-sm text-muted">
+        Used in {used.length} {used.length === 1 ? "project" : "projects"}
+      </p>
+      <h3 className="font-display text-2xl font-normal leading-tight tracking-tight sm:text-3xl">{cap.label}</h3>
+      <p className="mt-5 max-w-[52ch] leading-relaxed">{cap.description}</p>
+      <ul className="mt-6 border-t border-line">
+        {used.map((project) => (
+          <li key={project.id} className="border-b border-line">
+            <button
+              type="button"
+              onClick={() => onSelectProject(project.id)}
+              className="w-full py-2.5 text-left transition-colors hover:text-signal"
+            >
+              {project.title}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </article>
   );
 }
