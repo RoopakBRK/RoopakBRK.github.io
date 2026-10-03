@@ -54,14 +54,18 @@ function DenoisedLine({ text, delay }: { text: string; delay: number }) {
 export function Hero() {
   return (
     <div className="relative isolate overflow-hidden">
-      {/* Soft dark blue and dark pink light behind the globe */}
+      {/* Soft blue, violet and pink light behind the globe */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
         <div
           className="absolute -right-40 -top-24 h-[42rem] w-[42rem] rounded-full opacity-30 blur-3xl dark:opacity-40"
           style={{ background: "radial-gradient(circle, var(--grad-a), transparent 62%)" }}
         />
         <div
-          className="absolute right-[18%] top-[30%] h-[30rem] w-[30rem] rounded-full opacity-25 blur-3xl dark:opacity-35"
+          className="absolute right-[4%] top-[18%] h-[26rem] w-[26rem] rounded-full opacity-20 blur-3xl dark:opacity-30"
+          style={{ background: "radial-gradient(circle, var(--grad-mid), transparent 62%)" }}
+        />
+        <div
+          className="absolute right-[16%] top-[22%] h-[30rem] w-[30rem] rounded-full opacity-25 blur-3xl dark:opacity-35"
           style={{ background: "radial-gradient(circle, var(--grad-b), transparent 62%)" }}
         />
       </div>
@@ -89,7 +93,7 @@ export function Hero() {
                 href={personalInfo.resume}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-gradient-brand rounded-full px-5 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
+                className="btn-brand rounded-full px-5 py-2.5 text-sm font-medium text-white"
               >
                 View resume
               </a>
@@ -107,18 +111,6 @@ export function Hero() {
             <dt className="text-muted">Studied at</dt>
             <dd>
               {education.shortSchool}, {education.period.split("–")[1].trim()}
-            </dd>
-            <dt className="text-muted">Elsewhere</dt>
-            <dd className="flex gap-4">
-              <a href={personalInfo.github} target="_blank" rel="noopener noreferrer" className="link-underline">
-                GitHub
-              </a>
-              <a href={personalInfo.linkedin} target="_blank" rel="noopener noreferrer" className="link-underline">
-                LinkedIn
-              </a>
-              <a href={`mailto:${personalInfo.email}`} className="link-underline">
-                Email
-              </a>
             </dd>
           </dl>
         </div>

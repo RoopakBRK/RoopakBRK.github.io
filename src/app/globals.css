@@ -14,9 +14,15 @@
   --faint: #cfd4db;
   --signal: #3d2bff;
   --signal-ink: #ffffff;
-  /* Dark blue to dark pink, used for the name, the loss curve and the resume button */
-  --grad-a: #1b2a8a;
-  --grad-b: #9b1b62;
+  /* Blue to pink by way of violet, used for the name, the loss curve and the resume button.
+     The middle stop keeps the blend saturated instead of sagging into grey-purple. */
+  --grad-a: #1d2fc4;
+  --grad-mid: #7426d4;
+  --grad-b: #b8166d;
+  /* Deeper stops for fills that carry white text; the same in both schemes */
+  --fill-a: #1d2fc4;
+  --fill-mid: #7426d4;
+  --fill-b: #c01d76;
   color-scheme: light;
 }
 
@@ -29,8 +35,9 @@
     --faint: #161a22;
     --signal: #8577ff;
     --signal-ink: #06070a;
-    --grad-a: #4a5cf0;
-    --grad-b: #d6479a;
+    --grad-a: #6d7bff;
+    --grad-mid: #b06bff;
+    --grad-b: #ff5aa8;
     color-scheme: dark;
   }
 }
@@ -93,15 +100,65 @@
   }
 }
 
+/* Each gradient is declared twice: sRGB for older browsers, then OKLCH, which blends through cleaner hues. */
 .text-gradient {
-  background-image: linear-gradient(100deg, var(--grad-a), var(--grad-b));
+  background-image: linear-gradient(100deg, var(--grad-a), var(--grad-mid) 48%, var(--grad-b));
+  background-image: linear-gradient(100deg in oklch, var(--grad-a), var(--grad-mid) 48%, var(--grad-b));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
+/* A soft highlight from the top left sits over the colour so fills read as lit, not flat. */
 .bg-gradient-brand {
-  background-image: linear-gradient(100deg, #1b2a8a, #9b1b62);
+  background-image:
+    radial-gradient(120% 95% at 22% 0%, rgb(255 255 255 / 0.3), transparent 60%),
+    linear-gradient(115deg, var(--fill-a), var(--fill-mid) 50%, var(--fill-b));
+  background-image:
+    radial-gradient(120% 95% at 22% 0%, rgb(255 255 255 / 0.3), transparent 60%),
+    linear-gradient(115deg in oklch, var(--fill-a), var(--fill-mid) 50%, var(--fill-b));
+}
+
+/* Ring around the selected node on the project map and the current checkpoint.
+   These nodes carry no text, so they take the brighter scheme-aware stops. */
+.halo-brand {
+  --fill-a: var(--grad-a);
+  --fill-mid: var(--grad-mid);
+  --fill-b: var(--grad-b);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--grad-mid) 26%, transparent);
+}
+
+/* Two-colour bloom behind the skills core */
+.glow-brand {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.25),
+    0 0 48px -8px var(--grad-b),
+    0 0 110px -24px var(--grad-a);
+}
+
+/* The button's gradient is twice its width and mirrored, so hovering sweeps the colours across. */
+.btn-brand {
+  background-image:
+    radial-gradient(120% 95% at 22% 0%, rgb(255 255 255 / 0.26), transparent 60%),
+    linear-gradient(100deg, var(--fill-a), var(--fill-mid) 25%, var(--fill-b) 50%, var(--fill-mid) 75%, var(--fill-a));
+  background-image:
+    radial-gradient(120% 95% at 22% 0%, rgb(255 255 255 / 0.26), transparent 60%),
+    linear-gradient(100deg in oklch, var(--fill-a), var(--fill-mid) 25%, var(--fill-b) 50%, var(--fill-mid) 75%, var(--fill-a));
+  background-size: 100% 100%, 200% 100%;
+  background-position: 0 0, 0% 50%;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.28),
+    0 10px 24px -12px var(--grad-b),
+    0 4px 14px -8px var(--grad-a);
+  transition: background-position 0.6s ease, box-shadow 0.3s ease;
+}
+.btn-brand:hover,
+.btn-brand:focus-visible {
+  background-position: 0 0, 100% 50%;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.28),
+    0 14px 30px -12px var(--grad-b),
+    0 6px 18px -8px var(--grad-a);
 }
 
 @keyframes edge-flow {

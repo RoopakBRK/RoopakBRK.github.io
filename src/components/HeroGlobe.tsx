@@ -74,11 +74,12 @@ export function HeroGlobe() {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const scheme = window.matchMedia("(prefers-color-scheme: dark)");
 
-    let colors = { a: [0, 0, 0], b: [0, 0, 0], ink: [0, 0, 0], font: "sans-serif" };
+    let colors = { a: [0, 0, 0], mid: [0, 0, 0], b: [0, 0, 0], ink: [0, 0, 0], font: "sans-serif" };
     const readColors = () => {
       const styles = getComputedStyle(document.documentElement);
       colors = {
         a: hexToRgb(styles.getPropertyValue("--grad-a")),
+        mid: hexToRgb(styles.getPropertyValue("--grad-mid")),
         b: hexToRgb(styles.getPropertyValue("--grad-b")),
         ink: hexToRgb(styles.getPropertyValue("--ink")),
         font: getComputedStyle(document.body).fontFamily,
@@ -129,10 +130,12 @@ export function HeroGlobe() {
     const io = new IntersectionObserver(([entry]) => (visible = entry.isIntersecting));
     io.observe(canvas);
 
+    // Blue to violet across the left half, violet to pink across the right.
     const mix = (t: number, alpha: number) => {
-      const r = Math.round(colors.a[0] + (colors.b[0] - colors.a[0]) * t);
-      const g = Math.round(colors.a[1] + (colors.b[1] - colors.a[1]) * t);
-      const b = Math.round(colors.a[2] + (colors.b[2] - colors.a[2]) * t);
+      const [from, to, u] = t < 0.5 ? [colors.a, colors.mid, t * 2] : [colors.mid, colors.b, t * 2 - 1];
+      const r = Math.round(from[0] + (to[0] - from[0]) * u);
+      const g = Math.round(from[1] + (to[1] - from[1]) * u);
+      const b = Math.round(from[2] + (to[2] - from[2]) * u);
       return `rgba(${r},${g},${b},${alpha})`;
     };
 

@@ -11,10 +11,10 @@ const RADII = [13, 20, 27, 34, 41, 48]; // % of the orbit's width
 const DURATIONS = [70, 90, 110, 130, 150, 170]; // seconds per revolution
 const total = rings.reduce((n, g) => n + g.items.length, 0);
 
-// Each ring takes its colour from the dark blue to dark pink gradient.
+// Each ring takes its colour from the blue to pink gradient, mixed in OKLCH so the middle rings come out violet.
 const ringColor = (i: number) => {
   const t = Math.round((i / (rings.length - 1)) * 100);
-  return `color-mix(in srgb, var(--grad-b) ${t}%, var(--grad-a))`;
+  return `color-mix(in oklch, var(--grad-b) ${t}%, var(--grad-a))`;
 };
 
 export function TechStack() {
@@ -62,7 +62,7 @@ export function TechStack() {
         aria-hidden="true"
       >
         {/* Core */}
-        <div className="absolute left-1/2 top-1/2 flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full bg-gradient-brand text-white shadow-[0_0_60px_-10px_var(--grad-b)]">
+        <div className="absolute left-1/2 top-1/2 flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full bg-gradient-brand glow-brand text-white">
           <span className="font-display text-2xl font-light leading-none">{total}</span>
           <span className="mt-1 text-xs opacity-80">skills</span>
         </div>
