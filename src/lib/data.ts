@@ -165,7 +165,7 @@ export const featuredProjects: FeaturedProject[] = [
   },
   {
     id: "clinexa-voice-agent",
-    capabilities: ["voice", "agents", "backend"],
+    capabilities: ["voice", "agents", "rag", "backend"],
     title: "Clinexa Voice Agent",
     shortTitle: "Clinexa voice agent",
     github: "https://github.com/RoopakBRK",

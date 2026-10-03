@@ -26,6 +26,11 @@ function pathBetween(from: number, to: number) {
   return d;
 }
 
+// The solid part of the curve closed down to the baseline, for the wash beneath it.
+function areaUnder(to: number) {
+  return `${pathBetween(0, to)}L${(to * W).toFixed(1)},${H}L0,${H}Z`;
+}
+
 const [netConnect, mobius] = workExperience;
 
 type Checkpoint = {
@@ -120,8 +125,17 @@ export function Experience() {
           <defs>
             <linearGradient id="loss-gradient" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2={W} y2="0">
               <stop offset="0" stopColor="var(--grad-a)" />
+              <stop offset="0.5" stopColor="var(--grad-mid)" />
               <stop offset="1" stopColor="var(--grad-b)" />
             </linearGradient>
+            {/* Fades the wash out towards the baseline */}
+            <linearGradient id="loss-fade" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stopColor="#fff" stopOpacity={0.24} />
+              <stop offset="1" stopColor="#fff" stopOpacity={0} />
+            </linearGradient>
+            <mask id="loss-fade-mask" maskUnits="userSpaceOnUse" x={0} y={0} width={W} height={H}>
+              <rect x={0} y={0} width={W} height={H} fill="url(#loss-fade)" />
+            </mask>
             <clipPath id="loss-reveal">
               <motion.rect
                 x={0}
@@ -133,6 +147,9 @@ export function Experience() {
               />
             </clipPath>
           </defs>
+          <g clipPath="url(#loss-reveal)">
+            <path d={areaUnder(SOLID_UNTIL)} fill="url(#loss-gradient)" mask="url(#loss-fade-mask)" />
+          </g>
           <path
             d={pathBetween(0, SOLID_UNTIL)}
             fill="none"
@@ -168,7 +185,7 @@ export function Experience() {
             >
               <span
                 className={`block h-3 w-3 rounded-full ${
-                  c.future ? "border border-grad-b bg-bg" : i === checkpoints.length - 2 ? "bg-gradient-brand" : "bg-ink"
+                  c.future ? "border border-grad-b bg-bg" : i === checkpoints.length - 2 ? "bg-gradient-brand halo-brand" : "bg-ink"
                 }`}
               />
               <span

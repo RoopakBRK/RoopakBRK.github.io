@@ -30,7 +30,7 @@ function isEdgeLit(edge: (typeof edges)[number], s: Selection) {
 }
 
 function nodeClass(isSelected: boolean, isLit: boolean) {
-  if (isSelected) return "bg-gradient-brand scale-125";
+  if (isSelected) return "bg-gradient-brand halo-brand scale-125";
   if (isLit) return "bg-ink";
   return "border border-muted bg-bg";
 }
@@ -104,6 +104,7 @@ export function Projects() {
                 {/* userSpaceOnUse so perfectly horizontal edges still get the gradient */}
                 <linearGradient id="edge-gradient" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="100" y2="0">
                   <stop offset="0" stopColor="var(--grad-a)" />
+                  <stop offset="0.5" stopColor="var(--grad-mid)" />
                   <stop offset="1" stopColor="var(--grad-b)" />
                 </linearGradient>
               </defs>
