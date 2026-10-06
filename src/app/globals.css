@@ -14,7 +14,7 @@
   --faint: #cfd4db;
   --signal: #3d2bff;
   --signal-ink: #ffffff;
-  /* Blue to pink by way of violet, used for the name, the loss curve and the resume button.
+  /* Blue to pink by way of violet, used for the name, the accuracy curve and the resume button.
      The middle stop keeps the blend saturated instead of sagging into grey-purple. */
   --grad-a: #1d2fc4;
   --grad-mid: #7426d4;

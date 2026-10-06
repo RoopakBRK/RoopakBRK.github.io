@@ -66,7 +66,7 @@ export const workExperience: WorkExperience[] = [
       "Flags keystroke patterns and unauthorized browser activity.",
       "Generates 30+ proctoring reports daily for review.",
       "Designed a KYC pipeline that extracts Aadhaar and PAN details with OCR.",
-      "Used Mistral AI to resolve unclear or incomplete document fields.",
+      "Used OpenAI to resolve unclear or incomplete document fields.",
       "Matched document photos to candidate faces across 1,000+ production verifications.",
     ],
   },
@@ -194,9 +194,9 @@ export const featuredProjects: FeaturedProject[] = [
     shortTitle: "KYC",
     github: "https://github.com/RoopakBRK/kyc-verification-platform",
     description:
-      "Extracts details from Aadhaar and PAN documents with OCR, uses Mistral AI to resolve unclear or incomplete fields, and matches document photos against candidate faces to cut manual identity checks.",
+      "Extracts details from Aadhaar and PAN documents with OCR, uses OpenAI to resolve unclear or incomplete fields, and matches document photos against candidate faces to cut manual identity checks.",
     metrics: ["1,000+ production verifications", "97% face-match accuracy"],
-    tech: ["Python", "FastAPI", "OpenCV", "PyTorch", "Mistral", "React"],
+    tech: ["Python", "FastAPI", "OpenCV", "PyTorch", "OpenAI", "React"],
   },
   {
     id: "skillkendra",
