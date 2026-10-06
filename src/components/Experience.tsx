@@ -8,12 +8,13 @@ import { achievements, education, workExperience } from "@/lib/data";
 const W = 1000;
 const H = 220;
 
-// A training-loss curve: steep early descent, noisy, flattening out.
-// Returns an SVG y coordinate, so high loss sits near the top.
-function lossAt(t: number) {
-  const loss = 26 + 170 * Math.exp(-3.1 * t);
+// A training-accuracy curve: fast early gains, noisy, still climbing at the end.
+// Returns an SVG y coordinate, so high accuracy sits near the top.
+function accuracyAt(t: number) {
+  const gain = (1 - Math.exp(-1.6 * t)) / (1 - Math.exp(-1.6));
+  const accuracy = 24 + 155 * gain;
   const noise = (7 * Math.sin(t * 57) + 4 * Math.sin(t * 143 + 1.3)) * Math.exp(-1.6 * t);
-  return H - (loss + noise);
+  return H - (accuracy + noise);
 }
 
 function pathBetween(from: number, to: number) {
@@ -21,7 +22,7 @@ function pathBetween(from: number, to: number) {
   let d = "";
   for (let i = 0; i <= steps; i++) {
     const t = from + ((to - from) * i) / steps;
-    d += `${i === 0 ? "M" : "L"}${(t * W).toFixed(1)},${lossAt(t).toFixed(1)}`;
+    d += `${i === 0 ? "M" : "L"}${(t * W).toFixed(1)},${accuracyAt(t).toFixed(1)}`;
   }
   return d;
 }
@@ -114,7 +115,7 @@ export function Experience() {
               key={t}
               x1={t * W}
               x2={t * W}
-              y1={lossAt(t)}
+              y1={accuracyAt(t)}
               y2={H}
               stroke="var(--line)"
               strokeDasharray="2 4"
@@ -123,20 +124,20 @@ export function Experience() {
           ))}
           {/* Reveal with a growing clip rather than pathLength, which misbehaves with non-scaling strokes. */}
           <defs>
-            <linearGradient id="loss-gradient" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2={W} y2="0">
+            <linearGradient id="accuracy-gradient" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2={W} y2="0">
               <stop offset="0" stopColor="var(--grad-a)" />
               <stop offset="0.5" stopColor="var(--grad-mid)" />
               <stop offset="1" stopColor="var(--grad-b)" />
             </linearGradient>
             {/* Fades the wash out towards the baseline */}
-            <linearGradient id="loss-fade" x1="0" y1="0" x2="0" y2="1">
+            <linearGradient id="accuracy-fade" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0" stopColor="#fff" stopOpacity={0.24} />
               <stop offset="1" stopColor="#fff" stopOpacity={0} />
             </linearGradient>
-            <mask id="loss-fade-mask" maskUnits="userSpaceOnUse" x={0} y={0} width={W} height={H}>
-              <rect x={0} y={0} width={W} height={H} fill="url(#loss-fade)" />
+            <mask id="accuracy-fade-mask" maskUnits="userSpaceOnUse" x={0} y={0} width={W} height={H}>
+              <rect x={0} y={0} width={W} height={H} fill="url(#accuracy-fade)" />
             </mask>
-            <clipPath id="loss-reveal">
+            <clipPath id="accuracy-reveal">
               <motion.rect
                 x={0}
                 y={-20}
@@ -147,16 +148,16 @@ export function Experience() {
               />
             </clipPath>
           </defs>
-          <g clipPath="url(#loss-reveal)">
-            <path d={areaUnder(SOLID_UNTIL)} fill="url(#loss-gradient)" mask="url(#loss-fade-mask)" />
+          <g clipPath="url(#accuracy-reveal)">
+            <path d={areaUnder(SOLID_UNTIL)} fill="url(#accuracy-gradient)" mask="url(#accuracy-fade-mask)" />
           </g>
           <path
             d={pathBetween(0, SOLID_UNTIL)}
             fill="none"
-            stroke="url(#loss-gradient)"
+            stroke="url(#accuracy-gradient)"
             strokeWidth={2}
             vectorEffect="non-scaling-stroke"
-            clipPath="url(#loss-reveal)"
+            clipPath="url(#accuracy-reveal)"
           />
           <motion.path
             d={pathBetween(SOLID_UNTIL, 1)}
@@ -177,8 +178,9 @@ export function Experience() {
           return (
             <motion.div
               key={c.step}
-              className="absolute -translate-x-1/2 -translate-y-1/2"
-              style={{ left: `${t * 100}%`, top: `${(lossAt(t) / H) * 100}%` }}
+              className="absolute"
+              // Centre with motion's x/y: its scale animation writes the transform and would drop Tailwind's translate.
+              style={{ left: `${t * 100}%`, top: `${(accuracyAt(t) / H) * 100}%`, x: "-50%", y: "-50%" }}
               initial={{ opacity: 0, scale: 0.4 }}
               animate={drawn ? { opacity: 1, scale: 1 } : {}}
               transition={{ delay: reduceMotion ? 0 : t * DRAW_SECONDS, duration: reduceMotion ? 0 : 0.3 }}
