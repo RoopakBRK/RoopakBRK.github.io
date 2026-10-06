@@ -168,11 +168,12 @@ export const featuredProjects: FeaturedProject[] = [
     capabilities: ["voice", "agents", "rag", "backend"],
     title: "Clinexa Voice Agent",
     shortTitle: "Clinexa voice agent",
-    github: "https://github.com/RoopakBRK",
+    github: "https://github.com/RoopakBRK/Clinexa_Voice_Agent",
     description:
       "An AI voice agent that talks with callers over the phone in real time. Twilio handles the calls and audio streaming, and Deepgram converts speech to text as the caller speaks.",
     metrics: ["Handles live phone calls", "Real-time speech-to-text with Deepgram", "Call handling and audio streaming with Twilio"],
     tech: ["Twilio", "Deepgram"],
+    image: "/clinexsa.png",
   },
   {
     id: "ai-proctoring",
@@ -233,7 +234,7 @@ export const featuredProjects: FeaturedProject[] = [
       "A financial calculation platform with tools for investment planning, loan amortization and risk analysis.",
     metrics: ["Advanced calculators", "Intuitive dashboard"],
     tech: ["React", "Next.js", "TypeScript", "Tailwind CSS"],
-    image: "/fincalifyUI.jpg",
+    image: "/finacls.png",
   },
   {
     id: "calsify",
