@@ -73,7 +73,7 @@ const checkpoints: Checkpoint[] = [
     phase: "Next checkpoint",
     step: "next",
     org: "Open to new roles",
-    role: "AI/ML Engineer and AI FullStack Developer roles",
+    role: "AI/ML Engineer and AI Full Stack Developer roles",
     period: "",
     notes: [
       "Excited to join a team shipping AI products to real users.",
@@ -96,12 +96,7 @@ export function Experience() {
 
   return (
     <section id="experience" className="mx-auto max-w-page scroll-mt-20 px-4 py-24 sm:px-8 sm:py-32">
-      <div className="mb-12 grid gap-4 md:grid-cols-[1.4fr_1fr] md:items-end">
-        <h2 className="font-display text-3xl font-light tracking-tight sm:text-5xl">Experience</h2>
-        <p className="max-w-[44ch] text-muted">
-          Read as a training run: each phase built on the last, from fundamentals to AI running in production.
-        </p>
-      </div>
+      <h2 className="mb-12 font-display text-3xl font-light tracking-tight sm:text-5xl">Experience</h2>
 
       <div ref={ref} className="relative h-[140px] w-full sm:h-[220px]">
         <svg
@@ -180,7 +175,13 @@ export function Experience() {
               key={c.step}
               className="absolute"
               // Centre with motion's x/y: its scale animation writes the transform and would drop Tailwind's translate.
-              style={{ left: `${t * 100}%`, top: `${(accuracyAt(t) / H) * 100}%`, x: "-50%", y: "-50%" }}
+              // top is rounded because Node and browsers differ in the last digit of Math.exp and Math.sin.
+              style={{
+                left: `${t * 100}%`,
+                top: `${((accuracyAt(t) / H) * 100).toFixed(4)}%`,
+                x: "-50%",
+                y: "-50%",
+              }}
               initial={{ opacity: 0, scale: 0.4 }}
               animate={drawn ? { opacity: 1, scale: 1 } : {}}
               transition={{ delay: reduceMotion ? 0 : t * DRAW_SECONDS, duration: reduceMotion ? 0 : 0.3 }}
@@ -191,7 +192,7 @@ export function Experience() {
                 }`}
               />
               <span
-                className={`absolute bottom-full left-1/2 mb-2 -translate-x-1/2 font-mono text-[0.65rem] sm:text-xs ${
+                className={`absolute bottom-full left-1/2 mb-2 -translate-x-1/2 text-[0.65rem] sm:text-xs ${
                   c.future ? "text-grad-b" : "text-muted"
                 }`}
               >
@@ -208,7 +209,7 @@ export function Experience() {
             <p className={`text-sm ${c.future ? "text-grad-b" : "text-muted"}`}>{c.phase}</p>
             <h3 className="mt-2 font-display text-lg font-normal leading-snug tracking-tight">{c.org}</h3>
             <p className="mt-1 text-sm">{c.role}</p>
-            {c.period && <p className="mt-1 font-mono text-xs text-muted">{c.period}</p>}
+            {c.period && <p className="mt-1 text-xs text-muted">{c.period}</p>}
             <ul className="mt-4 list-disc space-y-2 pl-4 text-sm leading-snug marker:text-muted">
               {c.notes.map((note) => (
                 <li key={note}>{note}</li>

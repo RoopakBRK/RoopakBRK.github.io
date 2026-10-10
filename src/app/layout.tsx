@@ -1,23 +1,18 @@
 import type { Metadata } from "next";
-import { Unbounded, Instrument_Sans, JetBrains_Mono } from "next/font/google";
+import { Inter, Unbounded } from "next/font/google";
 import "./globals.css";
 import { personalInfo } from "@/lib/data";
 
-const display = Unbounded({
-  subsets: ["latin"],
-  weight: ["300", "400"],
-  variable: "--font-display",
-});
-
-const sans = Instrument_Sans({
+const sans = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
 });
 
-const mono = JetBrains_Mono({
+// Only the name is set in this one.
+const wordmark = Unbounded({
   subsets: ["latin"],
-  weight: ["400"],
-  variable: "--font-mono",
+  weight: ["300", "400"],
+  variable: "--font-wordmark",
 });
 
 export const metadata: Metadata = {
@@ -39,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${display.variable} ${sans.variable} ${mono.variable}`}>
+    <html lang="en" className={`${sans.variable} ${wordmark.variable}`}>
       <body className="font-sans antialiased">{children}</body>
     </html>
   );
