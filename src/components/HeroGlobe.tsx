@@ -18,7 +18,7 @@ const LABELS = [
   "Next.js",
   "LangChain",
   "Qdrant",
-  "FAISS",
+  "Groq",
   "Kubeflow",
   "MLflow",
   "Docker",

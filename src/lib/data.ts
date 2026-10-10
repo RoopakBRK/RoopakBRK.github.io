@@ -20,7 +20,7 @@ export const personalInfo: PersonalInfo = {
   email: "roopak2804@gmail.com",
   github: "https://github.com/RoopakBRK",
   linkedin: "https://linkedin.com/in/roopak-krishna-32958425a",
-  resume: "/Roopak_Bhukya_CV.pdf",
+  resume: "/Roopak_AI_CV.pdf",
 };
 
 export interface Education {
@@ -61,13 +61,13 @@ export const workExperience: WorkExperience[] = [
     period: "Nov 2025 – Jul 2026",
     phase: "Inference, in production",
     highlights: [
-      "Built an AI interview proctoring system using computer vision and AI agents.",
-      "Detects suspicious faces and voices, gaze direction and mobile devices during interviews.",
-      "Flags keystroke patterns and unauthorized browser activity.",
-      "Generates 30+ proctoring reports daily for review.",
-      "Designed a KYC pipeline that extracts Aadhaar and PAN details with OCR.",
-      "Used OpenAI to resolve unclear or incomplete document fields.",
-      "Matched document photos to candidate faces across 1,000+ production verifications.",
+      "Built and productionized a multimodal AI proctoring platform using computer vision and AI agents.",
+      "Detects faces, voices, gaze, phones, keystroke patterns and browser activity.",
+      "Reached 93% detection accuracy on a 500+ image benchmark, generating 30+ risk reports daily.",
+      "Cut per-interview processing cost by 50% (INR 8 to INR 4) with AWS EC2 Spot Instances and parallel analysis.",
+      "Reduced report time for 30-minute sessions from 5.5 to 4 minutes.",
+      "Built a production KYC pipeline for 1,000+ Aadhaar and PAN verifications using OCR, OpenAI and document-to-face matching.",
+      "Deployed on AWS EC2 with GitHub Actions CI/CD.",
     ],
   },
   {
@@ -77,10 +77,10 @@ export const workExperience: WorkExperience[] = [
     period: "Jun 2025 – Sep 2025",
     phase: "Fine-tuning",
     highlights: [
-      "Improved knowledge graph link prediction by 33% by replacing R-GCN with CompGCN.",
-      "Deployed a reusable MLOps workflow on Kubeflow Pipelines for GNN training, evaluation and versioning.",
-      "Fine-tuned Mistral and other LLMs on proprietary domain datasets using PEFT.",
-      "Gained 1.4% task accuracy while cutting inference latency by 0.3 seconds.",
+      "Improved knowledge graph link prediction by 33% by migrating from R-GCN to CompGCN.",
+      "Productionized a reusable Kubeflow Pipelines workflow for GNN training, evaluation, experiment tracking and model versioning.",
+      "Fine-tuned Mistral LLMs on proprietary domain datasets using PEFT.",
+      "Gained 1.4 percentage points of accuracy while cutting inference latency by 300 ms.",
     ],
   },
 ];
@@ -138,18 +138,19 @@ export const featuredProjects: FeaturedProject[] = [
   {
     id: "market-intelligence",
     capabilities: ["agents", "rag", "finance"],
-    title: "Market Intelligence RAG System",
+    title: "Multi-Agent Market Intelligence System",
     shortTitle: "Market intelligence",
-    period: "Jul 2026 – Sep 2026",
-    github: "https://github.com/RoopakBRK",
+    period: "Aug 2026 – Sep 2026",
+    github: "https://github.com/RoopakBRK/Market_Analysis",
     description:
-      "A multi-agent RAG system that turns real-time market news into structured daily intelligence for NIFTY 50 companies. LangGraph orchestrates the agents, LangChain handles retrieval and tooling, Qdrant powers vector search, and Grok analyses sentiment, events and market impact.",
+      "A multi-agent RAG system that automates daily market intelligence reports for NIFTY 50 companies. LangGraph, LangChain and Groq orchestrate the agents and their tools in parallel, Qdrant hybrid search (dense + BM25, RRF and cross-encoder reranking) retrieves across 20 years of market data, and a Firecrawl and Tavily pipeline ingests full-text news from 8 sources.",
     metrics: [
-      "9 specialized agents",
-      "21 tools for ingestion, retrieval and event extraction",
-      "Covers all NIFTY 50 companies",
+      "9 agents and 25 tools running in parallel",
+      "25,497 chunks spanning 20 years of NIFTY 50 data",
+      "Thin or missing article summaries cut from 25% to 0%",
+      "3-tier LLM fallback chain, a fact-checking agent and 137 automated pytest tests",
     ],
-    tech: ["LangGraph", "LangChain", "Qdrant", "Grok", "Python"],
+    tech: ["LangGraph", "LangChain", "Groq", "Qdrant", "Firecrawl", "Tavily", "Logfire", "Python"],
   },
   {
     id: "compgcn-link-prediction",
@@ -159,20 +160,26 @@ export const featuredProjects: FeaturedProject[] = [
     shortTitle: "CompGCN",
     github: "https://github.com/RoopakBRK",
     description:
-      "My internship project at Mobius by Gaian. I replaced the existing R-GCN model with CompGCN and fine-tuned it to predict missing links in a knowledge graph, then shipped it as a reusable Kubeflow Pipelines workflow covering GNN training, evaluation and versioning.",
+      "My internship project at Mobius by Gaian. I replaced the existing R-GCN model with CompGCN and fine-tuned it to predict missing links in a knowledge graph, then shipped it as a reusable Kubeflow Pipelines workflow covering GNN training, evaluation, experiment tracking and model versioning.",
     metrics: ["33% better link prediction than R-GCN", "Reusable end-to-end MLOps workflow on Kubeflow Pipelines"],
     tech: ["PyTorch", "CompGCN", "R-GCN", "Kubeflow Pipelines"],
   },
   {
     id: "clinexa-voice-agent",
     capabilities: ["voice", "agents", "rag", "backend"],
-    title: "Clinexa Voice Agent",
+    title: "Clinexa: RAG-Powered Healthcare Voice Agent",
     shortTitle: "Clinexa voice agent",
+    period: "Sep 2026 – Oct 2026",
     github: "https://github.com/RoopakBRK/Clinexa_Voice_Agent",
     description:
-      "An AI voice agent that talks with callers over the phone in real time. Twilio handles the calls and audio streaming, and Deepgram converts speech to text as the caller speaks.",
-    metrics: ["Handles live phone calls", "Real-time speech-to-text with Deepgram", "Call handling and audio streaming with Twilio"],
-    tech: ["Twilio", "Deepgram"],
+      "A real-time voice assistant for primary care, built in Python with FastAPI WebSockets, Twilio Media Streams and Deepgram streaming STT/TTS. It answers from a safety-aware RAG pipeline over clinical guidelines, using Qdrant, BGE embeddings, BM25/RRF hybrid search, cross-encoder reranking and age- and pregnancy-aware filters, plus a phonetic sparse-vector search over medicine names.",
+    metrics: [
+      "121 ms p95 retrieval latency over 4,200+ clinical-guideline chunks",
+      "87% recall@10 across 252K+ medicine names on 4,000 synthetic noisy queries",
+      "Retrieval tools at ~300 ms p95 latency, traced with OpenTelemetry in Pydantic Logfire",
+      "356 automated tests and an evaluation harness for Hits@k, MRR and NDCG",
+    ],
+    tech: ["Python", "FastAPI", "WebSockets", "Twilio", "Deepgram", "Qdrant", "BGE", "Logfire", "OpenTelemetry"],
     image: "/clinexsa.png",
   },
   {
@@ -184,8 +191,13 @@ export const featuredProjects: FeaturedProject[] = [
     github: "https://github.com/RoopakBRK/ai-proctoring-system",
     description:
       "Monitors live interviews with computer vision and AI agents. It detects suspicious faces and voices, gaze direction and mobile devices, and flags keystroke patterns and unauthorized browser activity.",
-    metrics: ["30+ proctoring reports generated daily", "93% detection accuracy", "Face, voice, gaze and device detection"],
-    tech: ["Python", "FastAPI", "OpenCV", "TensorFlow", "PostgreSQL", "Next.js"],
+    metrics: [
+      "93% detection accuracy on a 500+ image benchmark of simulated cheating scenarios",
+      "30+ risk reports generated daily",
+      "Processing cost per interview cut by 50% with AWS EC2 Spot Instances and parallel analysis",
+      "Report time for 30-minute sessions down from 5.5 to 4 minutes",
+    ],
+    tech: ["Python", "FastAPI", "OpenCV", "TensorFlow", "PostgreSQL", "Next.js", "AWS EC2"],
   },
   {
     id: "kyc-verification",
@@ -196,7 +208,7 @@ export const featuredProjects: FeaturedProject[] = [
     github: "https://github.com/RoopakBRK/kyc-verification-platform",
     description:
       "Extracts details from Aadhaar and PAN documents with OCR, uses OpenAI to resolve unclear or incomplete fields, and matches document photos against candidate faces to cut manual identity checks.",
-    metrics: ["1,000+ production verifications", "97% face-match accuracy"],
+    metrics: ["1,000+ production verifications", "97% face-match accuracy", "Deployed on AWS EC2 with GitHub Actions CI/CD"],
     tech: ["Python", "FastAPI", "OpenCV", "PyTorch", "OpenAI", "React"],
   },
   {
@@ -204,12 +216,17 @@ export const featuredProjects: FeaturedProject[] = [
     capabilities: ["ocr", "agents", "backend"],
     title: "Certificate Verification Platform (SkillKendra)",
     shortTitle: "SkillKendra",
-    period: "May 2026 – Jul 2026",
-    github: "https://github.com/RoopakBRK/skillkendra",
+    period: "Jul 2026 – Aug 2026",
+    github: "https://github.com/RoopakBRK/CAFS_Website",
     description:
-      "Reads uploaded certificates with PaddleOCR, EasyOCR and Tesseract in parallel, then cross-checks the details against official provider records with Selenium. A Mistral-based layer normalizes inconsistent fields and flags potential fraud, with manual review when the OCR output is unclear.",
-    metrics: ["50+ certification providers", "3 OCR engines running in parallel", "AI fraud flagging with manual review"],
-    tech: ["FastAPI", "PaddleOCR", "EasyOCR", "Tesseract", "Selenium", "Mistral"],
+      "An asynchronous certificate-verification API built with Python and FastAPI. It runs PaddleOCR, EasyOCR and Tesseract in parallel with consensus voting to improve extraction accuracy, then uses Playwright to cross-check the details against official provider records. Mistral and Qwen vision-language models handle difficult fields in the background, and TruFor image forensics detects tampered or forged certificates.",
+    metrics: [
+      "72 certification providers",
+      "3 OCR engines in parallel with consensus voting",
+      "Up to 2 s saved per document with background vision-language models",
+      "TruFor image forensics for tampered or forged certificates",
+    ],
+    tech: ["Python", "FastAPI", "PaddleOCR", "EasyOCR", "Tesseract", "Playwright", "Mistral", "Qwen", "TruFor"],
     image: "/skUI.jpg",
   },
   {
@@ -278,11 +295,11 @@ export const featuredProjects: FeaturedProject[] = [
 
 export const techStack: { label: string; items: string[] }[] = [
   { label: "Languages", items: ["Python", "C", "C++", "JavaScript", "TypeScript"] },
-  { label: "AI / ML", items: ["PyTorch", "Scikit-Learn", "TensorFlow", "PEFT", "LoRA", "NLP", "Computer Vision", "LLM Fine\u2011Tuning"] },
-  { label: "LLM / GenAI", items: ["RAG", "Agentic AI", "Multi-Agent Systems", "LangChain", "LangGraph", "Qdrant", "FAISS"] },
-  { label: "MLOps & Cloud", items: ["Kubeflow", "Kubeflow Pipelines", "MLflow", "Docker", "GitHub Actions", "AWS"] },
-  { label: "Backend / Web", items: ["React", "Next.js", "FastAPI", "Flask", "REST APIs"] },
-  { label: "Data & Tools", items: ["PostgreSQL", "MySQL", "Git", "GitHub", "Jupyter", "Postman"] },
+  { label: "AI / ML", items: ["PyTorch", "Scikit-Learn", "TensorFlow", "PEFT", "LoRA", "NLP", "Computer Vision", "LLM Fine\u2011Tuning", "OCR"] },
+  { label: "LLM / GenAI", items: ["RAG", "Embeddings", "Hybrid Search", "Agentic AI", "Multi-Agent Systems", "LangChain", "LangGraph", "Qdrant", "vLLM", "Groq", "OpenAI API"] },
+  { label: "MLOps & Cloud", items: ["Kubeflow", "MLflow", "Docker", "GitHub Actions", "AWS", "Logfire", "OpenTelemetry"] },
+  { label: "Backend / Web", items: ["React", "Next.js", "FastAPI", "Flask", "REST APIs", "WebSockets", "Twilio", "Deepgram"] },
+  { label: "Data & Tools", items: ["PostgreSQL", "MySQL", "Git/GitHub", "Jupyter", "Postman", "Playwright", "pytest", "Firecrawl", "Tavily"] },
 ];
 
 export interface BlogPost {
