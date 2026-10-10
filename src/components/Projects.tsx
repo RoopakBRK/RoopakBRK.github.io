@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
@@ -11,7 +11,9 @@ type Selection = { kind: "project"; id: string } | { kind: "capability"; id: Cap
 const ROW = 52;
 const HEIGHT = featuredProjects.length * ROW;
 const CAP_ROW = HEIGHT / capabilities.length;
-const COLUMNS = "grid-cols-[minmax(0,1fr)_minmax(2.5rem,0.6fr)_minmax(0,1fr)]";
+// The wires get a wider lane on large screens; on phones the labels need the room.
+const COLUMNS =
+  "grid-cols-[minmax(0,1fr)_minmax(2.5rem,0.6fr)_minmax(0,1fr)] lg:grid-cols-[minmax(0,1fr)_minmax(2.5rem,0.85fr)_minmax(0,1fr)]";
 
 const projectY = (i: number) => (i + 0.5) * ROW;
 const capabilityY = (j: number) => (j + 0.5) * CAP_ROW;
@@ -38,6 +40,7 @@ function nodeClass(isSelected: boolean, isLit: boolean) {
 export function Projects() {
   const [selection, setSelection] = useState<Selection>({ kind: "project", id: featuredProjects[0].id });
   const [hover, setHover] = useState<Selection | null>(null);
+  const detailRef = useRef<HTMLDivElement>(null);
   const reduceMotion = usePrefersReducedMotion();
 
   // Hover previews connections; the panel follows the committed selection.
@@ -48,20 +51,26 @@ export function Projects() {
   if (lit.kind === "project") litProjects.add(lit.id);
   else litCapabilities.add(lit.id);
 
-  const selectProject = (id: string) => setSelection({ kind: "project", id });
-  const selectCapability = (id: CapabilityId) => setSelection({ kind: "capability", id });
+  // On narrow screens the panel sits below the map, so a pick has to bring it into view.
+  const revealDetail = () => {
+    if (window.matchMedia("(min-width: 1024px)").matches) return;
+    detailRef.current?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+  };
+
+  const selectProject = (id: string) => {
+    setSelection({ kind: "project", id });
+    revealDetail();
+  };
+  const selectCapability = (id: CapabilityId) => {
+    setSelection({ kind: "capability", id });
+    revealDetail();
+  };
 
   return (
-    <section id="work" className="mx-auto max-w-page scroll-mt-8 px-4 py-24 sm:px-8 sm:py-32">
-      <div className="mb-12 grid gap-4 md:grid-cols-[1.4fr_1fr] md:items-end">
-        <h2 className="font-display text-3xl font-light tracking-tight sm:text-5xl">Projects</h2>
-        <p className="max-w-[44ch] text-muted">
-          Each project is wired to the capabilities it uses. Pick a project to trace its connections, or pick a
-          capability to see everywhere it shows up.
-        </p>
-      </div>
+    <section id="work" className="mx-auto max-w-page scroll-mt-14 px-4 py-24 sm:px-8 sm:py-32">
+      <h2 className="mb-12 font-display text-3xl font-light tracking-tight sm:text-5xl">Projects</h2>
 
-      <div className="grid gap-12 lg:grid-cols-[3fr_2fr] lg:gap-14">
+      <div className="grid gap-12 lg:grid-cols-[1.75fr_1fr] lg:gap-14">
         {/* Graph */}
         <div onMouseLeave={() => setHover(null)}>
           <div className={`mb-3 grid ${COLUMNS} text-sm font-medium text-muted`}>
@@ -172,8 +181,8 @@ export function Projects() {
           </div>
         </div>
 
-        {/* Detail */}
-        <div className="lg:sticky lg:top-10 lg:self-start" aria-live="polite">
+        {/* Detail. Beside the map it rises into the space next to the heading. */}
+        <div ref={detailRef} className="scroll-mt-20 lg:sticky lg:top-20 lg:-mt-12 lg:self-start" aria-live="polite">
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={`${selection.kind}-${selection.id}`}
@@ -189,6 +198,9 @@ export function Projects() {
               )}
             </motion.div>
           </AnimatePresence>
+          <a href="#work" className="link-underline mt-10 inline-block text-sm text-muted lg:hidden">
+            Back to the project map
+          </a>
         </div>
       </div>
     </section>
@@ -199,7 +211,7 @@ function ProjectDetail({ id, onSelectCapability }: { id: string; onSelectCapabil
   const project = featuredProjects.find((p) => p.id === id) ?? featuredProjects[0];
   return (
     <article>
-      {project.period && <p className="mb-3 font-mono text-xs text-muted">{project.period}</p>}
+      {project.period && <p className="mb-3 text-xs text-muted">{project.period}</p>}
       <h3 className="font-display text-2xl font-normal leading-tight tracking-tight sm:text-3xl">{project.title}</h3>
       <p className="mt-5 max-w-[52ch] leading-relaxed">{project.description}</p>
 
@@ -239,14 +251,17 @@ function ProjectDetail({ id, onSelectCapability }: { id: string; onSelectCapabil
       </div>
 
       <div className="mt-8 flex flex-wrap gap-6 text-sm">
-        <a href={project.github} target="_blank" rel="noopener noreferrer" className="link-underline font-medium">
-          View on GitHub
-        </a>
+        {project.github && (
+          <a href={project.github} target="_blank" rel="noopener noreferrer" className="link-underline font-medium">
+            View on GitHub
+          </a>
+        )}
         {project.live && (
           <a href={project.live} target="_blank" rel="noopener noreferrer" className="link-underline font-medium">
             Visit {new URL(project.live).host}
           </a>
         )}
+        {project.sourceNote && <p className="text-muted">{project.sourceNote}</p>}
       </div>
     </article>
   );

@@ -41,6 +41,13 @@ const LABELS = [
 const POINTS = 760;
 const GOLDEN = Math.PI * (3 - Math.sqrt(5));
 
+const IDLE_SPIN = 0.0022; // radians per frame
+const MAX_THROW = 0.12; // fastest spin a flick can leave behind, radians per frame
+const MAX_PITCH = 1.1;
+const FRAME_MS = 1000 / 60;
+// Perspective magnifies the point nearest the viewer by this much (see project() below).
+const FRONT_SCALE = 2.6 / 1.6;
+
 type Vec = { x: number; y: number; z: number };
 
 // Evenly spaced points on a unit sphere.
@@ -106,25 +113,79 @@ export function HeroGlobe() {
     });
     ro.observe(canvas);
 
-    // Pointer tilts the globe; spin keeps it alive.
+    // Pointer tilts the globe, a drag turns it, and spin keeps it alive.
     let spin = 0.6;
-    let tiltX = -0.35;
+    let spinVelocity = IDLE_SPIN;
+    let restX = -0.35; // the pitch the globe settles at; a drag moves it
+    let tiltX = restX;
     let tiltY = 0;
-    let targetX = -0.35;
+    let targetX = restX;
     let targetY = 0;
-    const onPointer = (e: PointerEvent) => {
+    let drag: { x: number; y: number; time: number; yawRate: number } | null = null;
+
+    const pointerOffset = (e: PointerEvent) => {
       const rect = canvas.getBoundingClientRect();
-      const px = (e.clientX - rect.left) / rect.width - 0.5;
-      const py = (e.clientY - rect.top) / rect.height - 0.5;
+      return {
+        px: (e.clientX - rect.left) / rect.width - 0.5,
+        py: (e.clientY - rect.top) / rect.height - 0.5,
+      };
+    };
+    const onPointer = (e: PointerEvent) => {
+      if (drag) return;
+      const { px, py } = pointerOffset(e);
       targetY = px * 0.9;
-      targetX = -0.35 + py * 0.7;
+      targetX = restX + py * 0.7;
     };
     const onLeave = () => {
-      targetX = -0.35;
+      if (drag) return;
+      targetX = restX;
       targetY = 0;
     };
+
+    const onDragStart = (e: PointerEvent) => {
+      if (e.button !== 0) return;
+      // Stops the drag from selecting the text beside the globe.
+      e.preventDefault();
+      canvas.setPointerCapture(e.pointerId);
+      drag = { x: e.clientX, y: e.clientY, time: e.timeStamp, yawRate: 0 };
+    };
+    const onDrag = (e: PointerEvent) => {
+      if (!drag) return;
+      // Radians per pixel that keep the grabbed point under the pointer.
+      const grip = 1 / (Math.min(width, height) * 0.4 * FRONT_SCALE);
+      const yaw = (e.clientX - drag.x) * grip;
+      const pitch = (drag.y - e.clientY) * grip;
+      const elapsed = Math.max(1, e.timeStamp - drag.time);
+      drag = { x: e.clientX, y: e.clientY, time: e.timeStamp, yawRate: yaw / elapsed };
+      spin += yaw;
+      const shift = Math.max(-MAX_PITCH, Math.min(MAX_PITCH, targetX + pitch)) - targetX;
+      targetX += shift;
+      tiltX += shift;
+      // No animation loop is running to pick the change up.
+      if (reduceMotion) draw();
+    };
+    const onDragEnd = (e: PointerEvent) => {
+      if (!drag) return;
+      // A flick keeps the globe turning; a drag that had come to rest just lets go.
+      const flicked = e.type === "pointerup" && e.timeStamp - drag.time < 80;
+      const thrown = flicked ? drag.yawRate * FRAME_MS : 0;
+      spinVelocity = Math.max(-MAX_THROW, Math.min(MAX_THROW, thrown));
+      drag = null;
+      // Re-anchor the hover tilt to where the pointer is now, so the globe stays where it was left.
+      const { px, py } = pointerOffset(e);
+      const yawShift = px * 0.9 - targetY;
+      targetY += yawShift;
+      tiltY += yawShift;
+      spin -= yawShift;
+      restX = targetX - py * 0.7;
+    };
+
     window.addEventListener("pointermove", onPointer);
     canvas.addEventListener("pointerleave", onLeave);
+    canvas.addEventListener("pointerdown", onDragStart);
+    canvas.addEventListener("pointermove", onDrag);
+    canvas.addEventListener("pointerup", onDragEnd);
+    canvas.addEventListener("pointercancel", onDragEnd);
 
     let visible = true;
     const io = new IntersectionObserver(([entry]) => (visible = entry.isIntersecting));
@@ -195,7 +256,11 @@ export function HeroGlobe() {
     let frame = 0;
     const tick = () => {
       if (visible) {
-        spin += 0.0022;
+        if (!drag) {
+          // A throw eases back into the idle spin.
+          spinVelocity += (IDLE_SPIN - spinVelocity) * 0.03;
+          spin += spinVelocity;
+        }
         tiltX += (targetX - tiltX) * 0.05;
         tiltY += (targetY - tiltY) * 0.05;
         draw();
@@ -213,8 +278,19 @@ export function HeroGlobe() {
       scheme.removeEventListener("change", readColors);
       window.removeEventListener("pointermove", onPointer);
       canvas.removeEventListener("pointerleave", onLeave);
+      canvas.removeEventListener("pointerdown", onDragStart);
+      canvas.removeEventListener("pointermove", onDrag);
+      canvas.removeEventListener("pointerup", onDragEnd);
+      canvas.removeEventListener("pointercancel", onDragEnd);
     };
   }, []);
 
-  return <canvas ref={canvasRef} className="h-full w-full" aria-hidden="true" />;
+  // touch-pan-y leaves vertical swipes to the page, so the globe never traps a scroll.
+  return (
+    <canvas
+      ref={canvasRef}
+      className="h-full w-full cursor-grab touch-pan-y select-none active:cursor-grabbing"
+      aria-hidden="true"
+    />
+  );
 }

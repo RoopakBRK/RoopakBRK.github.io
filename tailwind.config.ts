@@ -20,9 +20,9 @@ const config: Config = {
         "grad-b": "var(--grad-b)",
       },
       fontFamily: {
-        display: ["var(--font-display)", "sans-serif"],
+        display: ["var(--font-sans)", "sans-serif"],
         sans: ["var(--font-sans)", "sans-serif"],
-        mono: ["var(--font-mono)", "monospace"],
+        wordmark: ["var(--font-wordmark)", "sans-serif"],
       },
       maxWidth: {
         page: "76rem",

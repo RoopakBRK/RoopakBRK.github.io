@@ -75,6 +75,13 @@
     background-position: -1px -1px;
   }
 
+  /* The header once the page has scrolled: the page colour, slightly see-through, over a blur */
+  .nav-glass {
+    background-color: color-mix(in srgb, var(--bg) 82%, transparent);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+
   .link-underline {
     background-image: linear-gradient(currentColor, currentColor);
     background-size: 0% 1px;

@@ -11,6 +11,10 @@ const RADII = [13, 20, 27, 34, 41, 48]; // % of the orbit's width
 const DURATIONS = [70, 90, 110, 130, 150, 170]; // seconds per revolution
 const total = rings.reduce((n, g) => n + g.items.length, 0);
 
+// Node, which builds the HTML, and browsers disagree in the last digit of Math.cos and Math.sin.
+// Rounding makes both write the same position, so hydration finds the markup it expects.
+const percent = (n: number) => `${n.toFixed(4)}%`;
+
 // Each ring takes its colour from the blue to pink gradient, mixed in OKLCH so the middle rings come out violet.
 const ringColor = (i: number) => {
   const t = Math.round((i / (rings.length - 1)) * 100);
@@ -23,7 +27,7 @@ export function TechStack() {
   const focus = hovered ?? active;
 
   return (
-    <section className="mx-auto max-w-page px-4 py-24 sm:px-8">
+    <section id="skills" className="mx-auto max-w-page scroll-mt-14 px-4 py-24 sm:px-8">
       <div className="mx-auto mb-10 max-w-2xl text-center">
         <h2 className="font-display text-3xl font-light tracking-tight sm:text-5xl">Skills and tools</h2>
         <p className="mt-4 text-muted">
@@ -50,7 +54,7 @@ export function TechStack() {
             >
               <span className="h-2 w-2 rounded-full" style={{ background: ringColor(i) }} aria-hidden="true" />
               {group.label}
-              <span className="font-mono text-[0.7rem] text-muted">{group.items.length}</span>
+              <span className="text-[0.7rem] tabular-nums text-muted">{group.items.length}</span>
             </button>
           );
         })}
@@ -101,7 +105,7 @@ export function TechStack() {
                     <span
                       key={item}
                       className="absolute -translate-x-1/2 -translate-y-1/2"
-                      style={{ left: `${50 + r * Math.cos(angle)}%`, top: `${50 + r * Math.sin(angle)}%` }}
+                      style={{ left: percent(50 + r * Math.cos(angle)), top: percent(50 + r * Math.sin(angle)) }}
                     >
                       {/* Counter-rotate so labels stay upright */}
                       <span
