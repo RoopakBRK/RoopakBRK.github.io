@@ -23,7 +23,7 @@ export const personalInfo: PersonalInfo = {
   email: "roopak2804@gmail.com",
   github: "https://github.com/RoopakBRK",
   linkedin: "https://linkedin.com/in/roopak-krishna-32958425a",
-  resume: "/Roopak_AI_CV.pdf",
+  resume: "/static/assets/data/misc/doc_4f2a.pdf",
 };
 
 export interface Education {
